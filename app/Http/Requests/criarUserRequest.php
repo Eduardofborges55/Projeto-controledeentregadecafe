@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TokenRequest extends FormRequest
+class criarUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,12 +27,12 @@ class TokenRequest extends FormRequest
             'password' => [
                 'required',
                 'string',
-                'min : 8',
-                'regex: /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*]).*/'
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#-_\$%\^&\*]).*/'
             ]
         ];
     }
-public function mensages()
+public function messages()
 {
     return [
         'password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.'

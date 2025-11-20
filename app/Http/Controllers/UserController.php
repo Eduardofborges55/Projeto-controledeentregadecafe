@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TokenRequest;
+use App\Http\Requests\criarUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -11,7 +11,7 @@ use App\Models\GerenciamentoDeFila;
 
 class UserController extends Controller
 {
-   public function criarUsuario(TokenRequest $request)
+   public function criarUsuario(criarUserRequest $request)
 {
     $validado = $request->validated();
 
@@ -22,11 +22,10 @@ class UserController extends Controller
     $user->save();
 
     // ✅ Fila automática - após salvar o usuário
-    $ultimaPosicao = GerenciamentoDeFila::max('position') ?? 0;
+    $ultimaPosicao = GerenciamentoDeFila::max('id') ?? 0;
 
     GerenciamentoDeFila::create([
         'user_id' => $user->id,
-        'position' => $ultimaPosicao + 1,
         'ativo' => true,
     ]);
 
@@ -53,7 +52,7 @@ class UserController extends Controller
         $validado = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'email' => ['sometimes', 'required', 'string', 'email', 'max:255', 'unique:users,email,'],
-            'password' => ['sometimes', 'required', 'string', 'min:8', 'confirmed'],
+            'password' => ['sometimes', 'required', 'string', 'min:8']
         ]);
         $user = User::findOrFail($id);
         $user->fill($validado);
@@ -90,13 +89,16 @@ class UserController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
-                'email' => $user->email
+                'email' => $user->email,
+                'token' => $token,
+                'role' => $user->role,
+                'is_admin' => $user->role === 'admin'
             ],
             'token' => $token
         ]);
     }
 
-    public function criarAdmin(TokenRequest $request)
+    public function criarAdmin(criarUserRequest $request)
     {
         $validado = $request->validated();
 
@@ -119,13 +121,13 @@ class UserController extends Controller
         return User::findOrFail($id);
     }
 
-    public function atualizarAdmin (Request $request, $id)
+    public function atualizarAdmin (criarUserRequest $request, $id)
     {
         
         $validado = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'email' => ['sometimes', 'required', 'string', 'email', 'max:255', 'unique:users,email,'],
-            'password' => ['sometimes', 'required', 'string', 'min:8', 'confirmed'],
+            'password' => ['sometimes', 'required', 'string', 'min:8'],
         ]);
         $admin = User::findOrFail($id);
         $admin->fill($validado);

@@ -54,10 +54,10 @@ class GerenciamentoDeCompraController extends Controller
 
     public function RegistrarCompra(Request $request)
     {
-        return DB::trasaction(function () {
+        return DB::transaction(function () {
             $primeiro = GerenciamentoDeFila::orderBy('id')->first();
             if(!$primeiro) {
-                return response()->json(['message' => 'Fila vazia!',], 400); 
+                return response()->json(['message' => 'Fila vazia!'], 400); 
             }
 
             $compra = GerenciamentoDeCompra::create([
