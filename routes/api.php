@@ -23,6 +23,7 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
     Route::prefix('fila')->middleware('auth:sanctum')->group(function () {
     Route::post('/', [GerenciamentoDeFilaController::class, 'criarFila']);
     Route::get('/', [GerenciamentoDeFilaController::class, 'listarFila']);
+    Route::get('/primeiro', [GerenciamentoDeFilaController::class, 'primeiro']);
     Route::get('/{id}', [GerenciamentoDeFilaController::class, 'mostrarFila']);
     Route::put('/{id}', [GerenciamentoDeFilaController::class, 'atualizarFila']);
     Route::delete('/{id}', [GerenciamentoDeFilaController::class, 'deletarFila']);
@@ -35,6 +36,7 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
     Route::get('{id}', [GerenciamentoDeCompraController::class, 'mostrarCompra']);
     Route::put('{id}', [GerenciamentoDeCompraController::class, 'atualizarCompra']);
     Route::delete('{id}', [GerenciamentoDeCompraController::class, 'deletarCompra']);
+    Route::post('/registrar', [GerenciamentoDeCompraController::class, 'RegistrarCompra']);
 });
 
 
@@ -44,5 +46,6 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [UserController::class, 'mostrarAdmin']);
         Route::put('/{id}', [UserController::class, 'atualizarAdmin']);
         Route::delete('/{id}', [UserController::class, 'deletarAdmin']);
+        Route::put('/button/{id}', [UserController::class, 'atualizarAdminPorButton']);
     });
 ?>

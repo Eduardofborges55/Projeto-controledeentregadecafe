@@ -12,7 +12,7 @@ class GerenciamentoDeCompra extends Model
     use SoftDeletes;
 
     protected $fillable = ['id', 'user_id', 'purchase_time', 'amount'];
-    protected $table = 'GerenciamentoDeCompra';
+    protected $table = 'gerenciamentodecompra';
     protected $primaryKey = 'id';
 
     public function user()
@@ -20,9 +20,9 @@ class GerenciamentoDeCompra extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function Compra(): BelongsTo
-    {
-        return $this->belongsTo(GerenciamentoDeCompra::class);
-    }
+   public function Compra(): BelongsTo
+{
+    return $this->belongsTo(GerenciamentoDeCompra::class);
+}
     public $timestamps = true;
 }

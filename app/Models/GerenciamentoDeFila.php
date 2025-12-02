@@ -10,16 +10,17 @@ class GerenciamentoDeFila extends Model
 {
     use HasFactory;
 
-    protected $table = 'GerenciamentoDeFila';
+    protected $table = 'gerenciamentodefila';
 
     protected $fillable = [
         'user_id',
+        'primeiro',
         'ativo',
     ];
     
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function fila(): BelongsTo
@@ -29,3 +30,5 @@ class GerenciamentoDeFila extends Model
 
     public $timestamps = true;
 }
+
+

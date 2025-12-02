@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\GerenciamentoDeCompra;
 use App\Models\GerenciamentoDeFila;
+use Carbon\Carbon;
 
 class GerenciamentoDeCompraController extends Controller
 {
@@ -52,32 +53,38 @@ class GerenciamentoDeCompraController extends Controller
         return ['Message' => 'Compra deletada com sucesso!'];
     }
 
-    public function RegistrarCompra(Request $request)
-    {
-        return DB::transaction(function () {
-            $primeiro = GerenciamentoDeFila::orderBy('id')->first();
-            if(!$primeiro) {
-                return response()->json(['message' => 'Fila vazia!'], 400); 
-            }
+public function RegistrarCompra(Request $request)
+{
+    $userId = $request->input('user_id');
+    $amount = $request->input('amount');
 
-            $compra = GerenciamentoDeCompra::create([
-                'user_id' => $primeiro->user_id, 
-                'amount' => $primeiro->amount,
-                'purchase_time' => now()  
-            ]);
-
-            $primeiro->delete();
-
-            GerenciamentoDeFila::create([
-                'user_id' => $compra->user_id,
-                'ativo' => true
-            ]);
-
-            return response()->json([
-                'message' => 'Compra registrada e fila atualizada!',
-                'compra' => $compra,
-            ], 201); 
-        });
+    if (empty($userId) || empty($amount)) {
+        return response()->json(['message' => 'user_id e amount são obrigatórios.'], 400);
     }
+
+    return DB::transaction(function () use ($userId, $amount) {
+
+        // 1. Registra a compra com o user_id enviado pelo front
+        $compra = GerenciamentoDeCompra::create([
+            'user_id' => $userId,
+            'amount' => $amount,
+            'purchase_time' => now()
+        ]);
+
+        // 2. Remove o usuário da posição atual na fila (se existir)
+        GerenciamentoDeFila::where('user_id', $userId)->delete();
+
+        // 3. Adiciona ele novamente AO FINAL da fila
+        GerenciamentoDeFila::create([
+            'user_id' => $userId,
+            'ativo' => true
+        ]);
+
+        return response()->json([
+            'message' => 'Compra registrada! Usuário movido para o fim da fila.',
+            'compra' => $compra,
+        ], 201);
+    });
+}
 }
 ?>

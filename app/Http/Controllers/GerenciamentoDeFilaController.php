@@ -19,7 +19,17 @@ class GerenciamentoDeFilaController extends Controller
 
     public function listarFila()
     {
-        return GerenciamentoDeFila::all();
+        $fila = GerenciamentoDeFila::with('user:id,name')
+            ->orderBy('created_at')
+            ->get();
+
+            return $fila->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'user_id' => $item->user_id,
+                    'name' => $item->user->name ?? null,
+                ];
+            });
     }
 
     public function mostrarFila($id)
@@ -48,8 +58,15 @@ class GerenciamentoDeFilaController extends Controller
 
         return ['Message' => 'Fila deletada com sucesso!'];
     }
+
+    public function primeiro(Request $request) 
+    {
+        $primeiro = GerenciamentoDeFila::orderBy('id', 'asc')->first();
+
+        if (!$primeiro) {
+            return response()->json(null);
+        }
+
+        return response()->json($primeiro);
+    }
 }
-
-
-
-?>

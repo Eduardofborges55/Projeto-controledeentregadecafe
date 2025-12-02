@@ -113,7 +113,7 @@ class UserController extends Controller
 
     public function listarAdmins()
     {
-        return User::where('role', 'admin')->get();
+        return User::where('is_admin', true)->get();
     }
 
     public function mostrarAdmin($id)
@@ -142,6 +142,17 @@ class UserController extends Controller
         $admin->delete();
 
         return ['Message' => 'Admin deletado com sucesso!'];
+    }
+
+    public function atualizarAdminPorButton(Request $request, $id)
+    {
+        $admin = User::findOrFail($id);
+
+        // Alterna o status do admin
+        $admin->is_admin = !$admin->is_admin;
+        $admin->save();
+
+        return ['Message' => 'Status do Admin atualizado com sucesso!'];
     }
 }
 ?>
