@@ -21,7 +21,7 @@ class UserController extends Controller
     $user->password = Hash::make($validado['password']);
     $user->save();
 
-    // ✅ Fila automática - após salvar o usuário
+   
     $ultimaPosicao = GerenciamentoDeFila::max('id') ?? 0;
 
     GerenciamentoDeFila::create([
@@ -81,7 +81,6 @@ class UserController extends Controller
 
         $user->tokens()->delete();
 
-        // Generate a new token for the user
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -148,7 +147,6 @@ class UserController extends Controller
     {
         $admin = User::findOrFail($id);
 
-        // Alterna o status do admin
         $admin->is_admin = !$admin->is_admin;
         $admin->save();
 

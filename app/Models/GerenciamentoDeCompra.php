@@ -11,7 +11,7 @@ class GerenciamentoDeCompra extends Model
     
     use SoftDeletes;
 
-    protected $fillable = ['id', 'user_id', 'purchase_time', 'amount'];
+    protected $fillable = ['id', 'user_id', 'purchase_time', 'amount_Cafe', 'amount_Filtro'];
     protected $table = 'gerenciamentodecompra';
     protected $primaryKey = 'id';
 

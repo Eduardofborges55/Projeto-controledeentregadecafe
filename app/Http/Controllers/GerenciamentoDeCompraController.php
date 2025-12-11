@@ -11,11 +11,11 @@ class GerenciamentoDeCompraController extends Controller
 {
     public function criarCompra(Request $request)
     {
-        // Use the correct model for purchases, e.g., Compra
         $compra = new GerenciamentoDeCompra();
         $compra->user_id = $request->input('user_id');
         $compra->purchase_time = $request->input('purchase_time');
-        $compra->amount = $request->input('amount');
+        $compra->amount_Cafe = $request->input('amount_Cafe');
+        $compra->amount_Filtro = $request->input('amount_Filtro');
         $compra->save();
 
         return response()->json(['message' => 'Compra criada com sucesso!'], 201);      
@@ -37,7 +37,8 @@ class GerenciamentoDeCompraController extends Controller
         
         $validado = $request->validate([
             'purchase_time' => ['sometimes', 'required', 'date'],
-            'amount' => ['sometimes', 'required', 'numeric'],
+            'amount_Cafe' => ['sometimes', 'required', 'numeric'],
+            'amount_Filtro' => ['sometimes', 'required', 'numeric'],
         ]);
 
         $compra->update($validado);
@@ -56,25 +57,25 @@ class GerenciamentoDeCompraController extends Controller
 public function RegistrarCompra(Request $request)
 {
     $userId = $request->input('user_id');
-    $amount = $request->input('amount');
+    $amount_Cafe = $request->input('amount_Cafe');
+    $amount_Filtro = $request->input('amount_Filtro', 0);
 
-    if (empty($userId) || empty($amount)) {
-        return response()->json(['message' => 'user_id e amount são obrigatórios.'], 400);
+
+    if (empty($userId) || empty($amount_Cafe)) {
+        return response()->json(['message' => 'user_id e amount_Cafe são obrigatórios'], 400);
     }
 
-    return DB::transaction(function () use ($userId, $amount) {
+    return DB::transaction(function () use ($userId, $amount_Cafe, $amount_Filtro) {
 
-        // 1. Registra a compra com o user_id enviado pelo front
         $compra = GerenciamentoDeCompra::create([
             'user_id' => $userId,
-            'amount' => $amount,
+            'amount_Cafe' => $amount_Cafe,
+            'amount_Filtro' => $amount_Filtro,
             'purchase_time' => now()
         ]);
 
-        // 2. Remove o usuário da posição atual na fila (se existir)
         GerenciamentoDeFila::where('user_id', $userId)->delete();
 
-        // 3. Adiciona ele novamente AO FINAL da fila
         GerenciamentoDeFila::create([
             'user_id' => $userId,
             'ativo' => true
